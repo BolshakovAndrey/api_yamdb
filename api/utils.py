@@ -1,8 +1,8 @@
 import string
 import random
-
-from django.contrib.auth.models import Group
 from django.core.mail import send_mail
+
+CONFIRMATION_CODE_LEN = 10
 
 
 def send_mail_to_user(email, confirmation_code):
@@ -16,6 +16,6 @@ def send_mail_to_user(email, confirmation_code):
     )
 
 
-def generate_confirmation_code(length):
+def generate_confirmation_code():
     return ''.join(random.choices(string.digits + string.ascii_uppercase,
-                                  k=length))
+                                  k=CONFIRMATION_CODE_LEN))
