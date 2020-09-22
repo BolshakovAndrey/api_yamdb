@@ -32,16 +32,7 @@ class CreateListDestroyViewSet(mixins.ListModelMixin,
     """
     Вьюсет, обесечивающий `list()`, `create()`, `destroy()`
     """
-
-    def get(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
-
+    pass
 
 class CategoryViewSet(CreateListDestroyViewSet):
     """
