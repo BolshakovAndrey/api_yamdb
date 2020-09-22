@@ -1,5 +1,7 @@
 import string
 import random
+
+from django.contrib.auth.models import Group
 from django.core.mail import send_mail
 
 

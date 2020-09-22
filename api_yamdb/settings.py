@@ -118,13 +118,15 @@ AUTH_USER_MODEL = 'api.User'
 
 REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': [
-            'rest_framework_simplejwt.authentication.JWTAuthentication',
+            'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         ],
     }
 
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=36),
+JWT_AUTH = {
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': False,
+    'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
