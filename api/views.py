@@ -6,20 +6,23 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 
 from api.filters import TitleFilter
 from api.models import Category, Genre, Title
-from api.serializers import (CategorySerializer, GenreSerializer,
-                             TitleSerializer)
+from api.serializers import (CategorySerializer, GenreSerializer, TitleCreateSerializer, TitleListSerializer)
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
     """
-    A viewset that provides the CRUD actions with titles
+    Viewset который предоставляет CRUD-действия дл] произведений
     """
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend, SearchFilter)
     permission_classes = [IsAuthenticatedOrReadOnly]
     filterset_class = TitleFilter
     pagination_class = PageNumberPagination
+
+    def get_serializer_class(self):
+        if self.action in ('create', 'update', 'partial_update'):
+            return TitleCreateSerializer
+        return TitleListSerializer
 
 
 class CreateListDestroyViewSet(mixins.ListModelMixin,
@@ -27,7 +30,7 @@ class CreateListDestroyViewSet(mixins.ListModelMixin,
                                mixins.DestroyModelMixin,
                                viewsets.GenericViewSet):
     """
-    A viewset that provides `list`, `create` and 'destroy' actions.
+    Вьюсет, обесечивающий `list()`, `create()`, `destroy()`
     """
 
     def get(self, request, *args, **kwargs):
@@ -42,26 +45,25 @@ class CreateListDestroyViewSet(mixins.ListModelMixin,
 
 class CategoryViewSet(CreateListDestroyViewSet):
     """
-    Returns a list, creates new, and deletes existing categories
+    Возвращает список, создает новые и удаляет существующие категории
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = PageNumberPagination
-    permission_classes = [IsAdminUser, IsAuthenticatedOrReadOnly]
-    filter_backends = [SearchFilter, DjangoFilterBackend]
+    permission_classes = [IsAdminUser]
+    # filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name']
     lookup_field = 'slug'
 
 
-
 class GenreViewSet(CreateListDestroyViewSet):
     """
-    Returns a list, creates new, and deletes existing genre
+    Возвращает список, создает новые и удаляет существующие жанры
     """
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     pagination_class = PageNumberPagination
-    permission_classes = [IsAdminUser, IsAuthenticatedOrReadOnly]
-    filter_backends = [SearchFilter, DjangoFilterBackend]
+    permission_classes = [IsAdminUser]
+    # filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name']
     lookup_field = 'slug'
