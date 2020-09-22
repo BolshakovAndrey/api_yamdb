@@ -17,3 +17,6 @@ __pycache__/
 media/
 
 db.sqlite3
+
+Pipfile
+Pipfile.lock
