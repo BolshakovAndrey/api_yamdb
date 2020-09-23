@@ -16,10 +16,8 @@ __pycache__/
 
 media/
 
-<<<<<<< HEAD
 db.sqlite3
 sent_emails
 migrations
-=======
-db.sqlite3
->>>>>>> remotes/origin/review_comments
+Pipfile
+Pipfile.lock

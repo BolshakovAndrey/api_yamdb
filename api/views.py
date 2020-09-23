@@ -3,17 +3,24 @@ from rest_framework import status
 from rest_framework.generics import (
     get_object_or_404, ListAPIView, UpdateAPIView)
 from rest_framework.permissions import (
-    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly)
+    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserSerializer, CommentSerializer, ReviewSerializer
+from .serializers import (
+    UserSerializer, CommentSerializer, ReviewSerializer,
+    CategorySerializer, GenreSerializer, TitleCreateSerializer,
+    TitleListSerializer)
 from .utils import generate_confirmation_code, send_mail_to_user
-from .models import User, Review
+from .models import User, Review, Category, Genre, Title
 from .permissions import IsAdmin, IsSuperuser
 from django.shortcuts import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import mixins, viewsets
+from rest_framework.filters import SearchFilter
+from api.filters import TitleFilter
 
 
 BASE_USERNAME = 'User'
@@ -88,6 +95,58 @@ class UsersMeViewSet(ListAPIView, UpdateAPIView, GenericViewSet):
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=False)
         return Response(serializer.data)
+
+
+class TitlesViewSet(viewsets.ModelViewSet):
+    """
+    Viewset который предоставляет CRUD-действия дл] произведений
+    """
+    queryset = Title.objects.all()
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    filterset_class = TitleFilter
+    pagination_class = PageNumberPagination
+
+    def get_serializer_class(self):
+        if self.action in ('create', 'update', 'partial_update'):
+            return TitleCreateSerializer
+        return TitleListSerializer
+
+
+class CreateListDestroyViewSet(mixins.ListModelMixin,
+                               mixins.CreateModelMixin,
+                               mixins.DestroyModelMixin,
+                               viewsets.GenericViewSet):
+    """
+    Вьюсет, обесечивающий `list()`, `create()`, `destroy()`
+    """
+    pass
+
+
+class CategoryViewSet(CreateListDestroyViewSet):
+    """
+    Возвращает список, создает новые и удаляет существующие категории
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    pagination_class = PageNumberPagination
+    permission_classes = [IsAdminUser]
+    # filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = ['name']
+    lookup_field = 'slug'
+
+
+class GenreViewSet(CreateListDestroyViewSet):
+    """
+    Возвращает список, создает новые и удаляет существующие жанры
+    """
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    pagination_class = PageNumberPagination
+    permission_classes = [IsAdminUser]
+    # filter_backends = [SearchFilter, DjangoFilterBackend]
+    search_fields = ['name']
+    lookup_field = 'slug'
 
 
 class CommentViewSet(CreateListDestroyViewSet):
