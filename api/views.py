@@ -6,12 +6,13 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 
 from api.filters import TitleFilter
 from api.models import Category, Genre, Title
-from api.serializers import (CategorySerializer, GenreSerializer, TitleCreateSerializer, TitleListSerializer)
+from api.serializers import (CategorySerializer, GenreSerializer,
+                             TitleCreateSerializer, TitleListSerializer)
 
 
 class TitlesViewSet(viewsets.ModelViewSet):
     """
-    Viewset который предоставляет CRUD-действия дл] произведений
+    Viewset, который предоставляет CRUD-действия для произведений
     """
     queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend, SearchFilter)
@@ -30,9 +31,9 @@ class CreateListDestroyViewSet(mixins.ListModelMixin,
                                mixins.DestroyModelMixin,
                                viewsets.GenericViewSet):
     """
-    Вьюсет, обесечивающий `list()`, `create()`, `destroy()`
+    Viewset, обесечивающий `list()`, `create()`, `destroy()` по умолчанию
     """
-    pass
+
 
 class CategoryViewSet(CreateListDestroyViewSet):
     """
@@ -42,7 +43,6 @@ class CategoryViewSet(CreateListDestroyViewSet):
     serializer_class = CategorySerializer
     pagination_class = PageNumberPagination
     permission_classes = [IsAdminUser]
-    # filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name']
     lookup_field = 'slug'
 
@@ -55,6 +55,5 @@ class GenreViewSet(CreateListDestroyViewSet):
     serializer_class = GenreSerializer
     pagination_class = PageNumberPagination
     permission_classes = [IsAdminUser]
-    # filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name']
     lookup_field = 'slug'
