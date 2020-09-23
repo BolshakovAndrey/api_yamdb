@@ -2,15 +2,18 @@ from django.db.models import Max
 from rest_framework import status
 from rest_framework.generics import (
     get_object_or_404, ListAPIView, UpdateAPIView)
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (
+    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserSerializer
+from .serializers import UserSerializer, CommentSerializer, ReviewSerializer
 from .utils import generate_confirmation_code, send_mail_to_user
-from .models import User
+from .models import User, Review
 from .permissions import IsAdmin, IsSuperuser
+from django.shortcuts import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
 
 
 BASE_USERNAME = 'User'
@@ -85,3 +88,20 @@ class UsersMeViewSet(ListAPIView, UpdateAPIView, GenericViewSet):
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=False)
         return Response(serializer.data)
+
+
+class CommentViewSet(CreateListDestroyViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        review = get_object_or_404(Review, id=self.kwargs.get('id'))
+        return review.comments.all()
+
+
+class ReviewViewSet(CreateListDestroyViewSet):
+    queryset = get_object_or_404(Review, id=self.kwargs.get('id'))
+    serializer_class = ReviewSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    pagination_class = PageNumberPagination

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Roles
+from .models import User, Roles, Comment, Review
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,3 +12,27 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'confirmation_code': {'write_only': True},
                         'username': {'required': True},
                         'email': {'required': True}}
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='username'
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Review
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        many=False,
+        read_only=True,
+        slug_field='username'
+    )
+
+    class Meta:
+        fields = '__all__'
+        model = Comment
