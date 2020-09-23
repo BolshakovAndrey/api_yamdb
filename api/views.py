@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
-from rest_framework_jwt.settings import api_settings
+from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserSerializer
 from .utils import generate_confirmation_code, send_mail_to_user
 from .models import User
@@ -50,11 +50,8 @@ class TokenView(APIView):
     permission_classes = (AllowAny, )
 
     def get_token(self, user):
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER  # здесь и ниже - магия генерации токена
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-        payload = jwt_payload_handler(user)
-        token = jwt_encode_handler(payload)
-        return token
+        refresh = RefreshToken.for_user(user)
+        return str(refresh.access_token)
 
     def post(self, request):
         user = get_object_or_404(User, email=request.data.get('email'))
@@ -69,7 +66,7 @@ class UsersViewSet(ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     lookup_field = 'username'
-    permission_classes = (IsSuperuser | IsAdmin,)
+    permission_classes = (IsAuthenticated, IsSuperuser | IsAdmin,)
 
 
 class UsersMeViewSet(ListAPIView, UpdateAPIView, GenericViewSet):
