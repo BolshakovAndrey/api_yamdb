@@ -25,7 +25,7 @@ class Review(models.Model):
     )
     title = models.ForeignKey(
         Title,
-        verbose_name=('Произведение'),
+        verbose_name='Произведение',
         on_delete=models.CASCADE
     )
     pub_date = models.DateTimeField(
@@ -34,7 +34,7 @@ class Review(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = 'Рецензия'
+        unique_together = ['author', 'scope']
 
 
 class Comment(models.Model):
@@ -55,6 +55,3 @@ class Comment(models.Model):
         'Дата публикации',
         auto_now_add=True,
     )
-
-    class Meta:
-        verbose_name_plural = 'Комментарии'
