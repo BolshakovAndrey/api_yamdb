@@ -92,7 +92,8 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title,
         verbose_name='Произведение',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='reviews',
     )
     pub_date = models.DateTimeField(
         'Дата публикации',
