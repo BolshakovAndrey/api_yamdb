@@ -1,4 +1,4 @@
-from rest_framework import serializers, validators
+from rest_framework import serializers
 from .models import User, Roles, Comment, Review, Category, Genre, Title
 
 
@@ -83,9 +83,11 @@ class TitleListSerializer(serializers.ModelSerializer):
     """
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
-        fields = ('__all__')
+        fields = ('id', 'name', 'year', 'rating',
+                  'description', 'genre', 'category')
         model = Title
 
 

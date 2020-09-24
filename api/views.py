@@ -1,4 +1,5 @@
-from django.db.models import Max
+from api.filters import TitleFilter
+from django.db.models import Max, Avg
 from rest_framework import status
 from rest_framework.generics import (
     get_object_or_404, ListAPIView, UpdateAPIView)
@@ -7,7 +8,11 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.mixins import (
+    ListModelMixin, CreateModelMixin, DestroyModelMixin)
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.filters import SearchFilter
 from .serializers import (
     UserSerializer, CommentSerializer, ReviewSerializer,
     CategorySerializer, GenreSerializer, TitleCreateSerializer,
@@ -16,12 +21,7 @@ from .utils import generate_confirmation_code, send_mail_to_user
 from .models import User, Review, Category, Genre, Title
 from .permissions import (
     IsAdminOrReadOnly, IsSuperuser, IsAdmin, IsAuthor, IsModerator)
-from django.shortcuts import get_object_or_404
-from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins, viewsets
-from rest_framework.filters import SearchFilter
-from api.filters import TitleFilter
 
 
 BASE_USERNAME = 'User'
@@ -98,11 +98,11 @@ class UsersMeViewSet(ListAPIView, UpdateAPIView, GenericViewSet):
         return Response(serializer.data)
 
 
-class TitlesViewSet(viewsets.ModelViewSet):
+class TitlesViewSet(ModelViewSet):
     """
     Viewset который предоставляет CRUD-действия дл] произведений
     """
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     filter_backends = (DjangoFilterBackend, SearchFilter)
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
     filterset_class = TitleFilter
@@ -114,10 +114,10 @@ class TitlesViewSet(viewsets.ModelViewSet):
         return TitleListSerializer
 
 
-class CreateListDestroyViewSet(mixins.ListModelMixin,
-                               mixins.CreateModelMixin,
-                               mixins.DestroyModelMixin,
-                               viewsets.GenericViewSet):
+class CreateListDestroyViewSet(ListModelMixin,
+                               CreateModelMixin,
+                               DestroyModelMixin,
+                               GenericViewSet):
     """
     Вьюсет, обесечивающий `list()`, `create()`, `destroy()`
     """
