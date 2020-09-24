@@ -74,6 +74,9 @@ class Title(models.Model):
 
 
 class Review(models.Model):
+    """
+    Отзывы на произведения
+    """
     text = models.TextField(verbose_name='Отзыв')
     author = models.ForeignKey(
         User,
@@ -108,10 +111,13 @@ class Review(models.Model):
         verbose_name_plural = 'Отзывы'
 
     def __str__(self):
-        return f'Отзыв {self.author} на {self.title}'
+        return f'Отзыв от {self.author} на {self.title}'
 
 
 class Comment(models.Model):
+    """
+    Комментарии к отзывам
+    """
     text = models.TextField(verbose_name='Комментарий')
     author = models.ForeignKey(
         User,
@@ -135,4 +141,4 @@ class Comment(models.Model):
         verbose_name_plural = 'Комментарии'
 
     def __str__(self):
-        return f'Комментарий {self.author} к {self.review}'
+        return f'Комментарий от {self.author} к {self.review}'
