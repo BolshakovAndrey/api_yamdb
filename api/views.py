@@ -14,7 +14,8 @@ from .serializers import (
     TitleListSerializer)
 from .utils import generate_confirmation_code, send_mail_to_user
 from .models import User, Review, Category, Genre, Title
-from .permissions import IsAdminOrReadOnly, IsSuperuser, IsAdmin
+from .permissions import (
+    IsAdminOrReadOnly, IsSuperuser, IsAdmin, IsAuthor, IsModerator)
 from django.shortcuts import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
@@ -151,7 +152,8 @@ class GenreViewSet(CreateListDestroyViewSet):
 
 class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
-    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthor | IsModerator |
+                          IsAdminOrReadOnly | IsSuperuser]
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -169,17 +171,11 @@ class CommentViewSet(ModelViewSet):
         )
         serializer.save(author=self.request.user, review=review)
 
-    def get_permissions(self):
-        if self.action in ('update', 'partial_update'):
-            self.permission_classes = [IsAdminOrReadOnly]
-        else:
-            self.permission_classes = [IsAuthenticatedOrReadOnly]
-        return super().get_permissions()
-
 
 class ReviewViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthor | IsModerator |
+                          IsAdminOrReadOnly | IsSuperuser]
     pagination_class = PageNumberPagination
 
     def get_queryset(self):

@@ -4,18 +4,34 @@ from rest_framework.permissions import BasePermission
 from .models import Roles
 
 
+class IsAuthor(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return (request.user.is_authenticated and
+                obj.author == request.user)
+
+
 class IsModerator(BasePermission):
     message = 'Не хватает прав, нужны права Модератора'
 
     def has_permission(self, request, view):
-        return request.user.role == Roles.MODERATOR
+        return (request.user.is_authenticated
+                and request.user.role == Roles.MODERATOR)
+
+    def has_object_permission(self, request, view, obj):
+        return (request.user.is_authenticated
+                and request.user.role == Roles.MODERATOR)
 
 
 class IsAdmin(BasePermission):
     message = 'Не хватает прав, нужны права Администратора'
 
     def has_permission(self, request, view):
-        return request.user.role == Roles.ADMIN
+        return (request.user.is_authenticated
+                and request.user.role == Roles.ADMIN)
+
+    def has_object_permission(self, request, view, obj):
+        return (request.user.is_authenticated
+                and request.user.role == Roles.ADMIN)
 
 
 class IsAdminOrReadOnly(BasePermission):
@@ -32,9 +48,21 @@ class IsAdminOrReadOnly(BasePermission):
             return bool(request.user.is_staff or
                         request.user.role == Roles.ADMIN)
 
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if request.user.is_authenticated:
+            return bool(request.user.is_staff or
+                        request.user.role == Roles.ADMIN)
+
 
 class IsSuperuser(BasePermission):
     message = 'Не хватает прав, нужны права Администратора Django'
 
     def has_permission(self, request, view):
-        return request.user.is_superuser
+        return (request.user.is_authenticated
+                and request.user.is_superuser)
+
+    def has_object_permission(self, request, view, obj):
+        return (request.user.is_authenticated
+                and request.user.is_superuser)
