@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.generics import (
     get_object_or_404, ListAPIView, UpdateAPIView)
 from rest_framework.permissions import (
-    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser)
+    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
@@ -14,7 +14,7 @@ from .serializers import (
     TitleListSerializer)
 from .utils import generate_confirmation_code, send_mail_to_user
 from .models import User, Review, Category, Genre, Title
-from .permissions import IsAdminOrReadOnly, IsSuperuser
+from .permissions import IsAdminOrReadOnly, IsSuperuser, IsAdmin
 from django.shortcuts import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from django_filters.rest_framework import DjangoFilterBackend
@@ -76,7 +76,7 @@ class UsersViewSet(ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     lookup_field = 'username'
-    permission_classes = (IsAuthenticated, IsSuperuser | IsAdminOrReadOnly,)
+    permission_classes = (IsAuthenticated, IsSuperuser | IsAdmin,)
 
 
 class UsersMeViewSet(ListAPIView, UpdateAPIView, GenericViewSet):
@@ -149,9 +149,9 @@ class GenreViewSet(CreateListDestroyViewSet):
     lookup_field = 'slug'
 
 
-class CommentViewSet(CreateListDestroyViewSet):
+class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -169,10 +169,17 @@ class CommentViewSet(CreateListDestroyViewSet):
         )
         serializer.save(author=self.request.user, review=review)
 
+    def get_permissions(self):
+        if self.action in ('update', 'partial_update'):
+            self.permission_classes = [IsAdminOrReadOnly]
+        else:
+            self.permission_classes = [IsAuthenticatedOrReadOnly]
+        return super().get_permissions()
 
-class ReviewViewSet(CreateListDestroyViewSet):
+
+class ReviewViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     pagination_class = PageNumberPagination
 
     def get_queryset(self):

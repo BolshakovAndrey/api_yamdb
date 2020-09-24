@@ -11,6 +11,13 @@ class IsModerator(BasePermission):
         return request.user.role == Roles.MODERATOR
 
 
+class IsAdmin(BasePermission):
+    message = 'Не хватает прав, нужны права Администратора'
+
+    def has_permission(self, request, view):
+        return request.user.role == Roles.ADMIN
+
+
 class IsAdminOrReadOnly(BasePermission):
     """
     Редактирование объекта возможно только для только для admin.
@@ -22,7 +29,8 @@ class IsAdminOrReadOnly(BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         if request.user.is_authenticated:
-            return bool(request.user.is_staff or request.user.role == Roles.ADMIN)
+            return bool(request.user.is_staff or
+                        request.user.role == Roles.ADMIN)
 
 
 class IsSuperuser(BasePermission):

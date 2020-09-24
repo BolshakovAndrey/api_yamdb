@@ -1,0 +1,19 @@
+insert into api_user (id,username,email,role,password,is_superuser,first_name, last_name, 
+is_staff, is_active, date_joined, confirmation_code) 
+values(100,'bingobongo','bingobongo@yamdb.fake','user','12345',0,'','',0,1,'','RI1KI0XY22');
+
+insert into api_user (id,username,email,role,password,is_superuser,first_name, last_name, 
+is_staff, is_active, date_joined, confirmation_code) 
+values(101,'capt_obvious','capt_obvious@yamdb.fake','admin','12345',0,'','',0,1,'','RI1KI0XY22');
+
+insert into api_user (id,username,email,role,password,is_superuser,first_name, last_name, 
+is_staff, is_active, date_joined, confirmation_code) 
+values(102,'faust','faust@yamdb.fake','user','12345',0,'','',0,1,'','RI1KI0XY22');
+
+insert into api_user (id,username,email,role,password,is_superuser,first_name, last_name, 
+is_staff, is_active, date_joined, confirmation_code) 
+values(103,'reviewer','reviewer@yamdb.fake','user','12345',0,'','',0,1,'','RI1KI0XY22');
+
+insert into api_user (id,username,email,role,password,is_superuser,first_name, last_name, 
+is_staff, is_active, date_joined, confirmation_code) 
+values(104,'angry','angry@yamdb.fake','moderator','12345',0,'','',0,1,'','RI1KI0XY22');
