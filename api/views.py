@@ -152,15 +152,25 @@ class GenreViewSet(CreateListDestroyViewSet):
 class CommentViewSet(CreateListDestroyViewSet):
     serializer_class = CommentSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
-    pagination_class = PageNumberPagination
 
     def get_queryset(self):
-        review = get_object_or_404(Review, id=self.kwargs.get('id'))
+        title_id = self.kwargs.get('title_id')
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(
+            Review.objects.filter(title_id=title_id), pk=review_id
+        )
         return review.comments.all()
+
+    def perform_create(self, serializer):
+        title_id = self.kwargs.get('title_id')
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(
+            Review.objects.filter(title_id=title_id), pk=review_id
+        )
+        serializer.save(author=self.request.user, review=review)
 
 
 class ReviewViewSet(CreateListDestroyViewSet):
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = PageNumberPagination
@@ -169,3 +179,6 @@ class ReviewViewSet(CreateListDestroyViewSet):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         return title.reviews.all()
 
+    def perform_create(self, serializer):
+        title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
+        serializer.save(author=self.request.user, title=title)
