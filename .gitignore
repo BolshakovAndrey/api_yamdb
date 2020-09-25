@@ -17,7 +17,5 @@ __pycache__/
 media/
 
 db.sqlite3
-sent_emails
-migrations
 Pipfile
 Pipfile.lock
