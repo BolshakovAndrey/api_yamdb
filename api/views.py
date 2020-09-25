@@ -1,18 +1,18 @@
 from django.db.models import Avg, Max
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
+from rest_framework.filters import SearchFilter
 from rest_framework.generics import (ListAPIView, UpdateAPIView,
                                      get_object_or_404)
+from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
+                                   ListModelMixin)
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.mixins import (
-    ListModelMixin, CreateModelMixin, DestroyModelMixin)
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.filters import SearchFilter
-from django_filters.rest_framework import DjangoFilterBackend
 
 from api.filters import TitleFilter
 
@@ -132,7 +132,6 @@ class CategoryViewSet(CreateListDestroyViewSet):
     serializer_class = CategorySerializer
     pagination_class = PageNumberPagination
     permission_classes = [IsAdminOrReadOnly]
-    # filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name']
     lookup_field = 'slug'
 
@@ -145,7 +144,6 @@ class GenreViewSet(CreateListDestroyViewSet):
     serializer_class = GenreSerializer
     pagination_class = PageNumberPagination
     permission_classes = [IsAdminOrReadOnly]
-    # filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name']
     lookup_field = 'slug'
 

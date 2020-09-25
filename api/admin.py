@@ -26,6 +26,7 @@ class TitleAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'year', 'description', 'category')
     empty_value_display = '-пусто-'
 
+
 class ReviewAdmin(admin.ModelAdmin):
     """
     Администрирование отзывов.

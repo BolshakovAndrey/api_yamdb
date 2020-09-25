@@ -1,6 +1,7 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+
 from .utils import generate_confirmation_code
 
 
@@ -27,7 +28,7 @@ class User(AbstractUser):
                               blank=False, null=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ('username', )
+    REQUIRED_FIELDS = ('username',)
 
 
 class Genre(models.Model):
