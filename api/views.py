@@ -122,7 +122,6 @@ class CreateListDestroyViewSet(ListModelMixin,
     """
     Вьюсет, обесечивающий `list()`, `create()`, `destroy()`
     """
-    pass
 
 
 class CategoryViewSet(CreateListDestroyViewSet):

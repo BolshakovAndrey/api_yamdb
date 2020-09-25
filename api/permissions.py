@@ -5,12 +5,18 @@ from .models import Roles
 
 
 class IsAuthor(BasePermission):
+    """
+    Редактирование объекта возможно только для Автора.
+    """
     def has_object_permission(self, request, view, obj):
         return (request.user.is_authenticated and
                 obj.author == request.user)
 
 
 class IsModerator(BasePermission):
+    """
+    Редактирование объекта возможно только для Модератора.
+    """
     message = 'Не хватает прав, нужны права Модератора'
 
     def has_permission(self, request, view):
@@ -23,6 +29,9 @@ class IsModerator(BasePermission):
 
 
 class IsAdmin(BasePermission):
+    """
+    Редактирование объекта возможно только для Модератора.
+    """
     message = 'Не хватает прав, нужны права Администратора'
 
     def has_permission(self, request, view):
@@ -36,7 +45,7 @@ class IsAdmin(BasePermission):
 
 class IsAdminOrReadOnly(BasePermission):
     """
-    Редактирование объекта возможно только для только для admin.
+    Редактирование объекта возможно только для Администратора.
     Для чтения доступно всем.
     """
     message = 'Не хватает прав, нужны права Администратора'
@@ -57,6 +66,9 @@ class IsAdminOrReadOnly(BasePermission):
 
 
 class IsSuperuser(BasePermission):
+    """
+    Для редактирование объекта необходим статус superuser
+    """
     message = 'Не хватает прав, нужны права Администратора Django'
 
     def has_permission(self, request, view):
