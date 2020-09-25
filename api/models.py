@@ -12,7 +12,7 @@ class Roles(models.TextChoices):
 
 class User(AbstractUser):
     """
-    Переопределенный пользователь, дополнен нужныеми полями
+    Переопределенный пользователь, дополнен нужными полями
     """
     bio = models.CharField(max_length=4000, null=True,
                            verbose_name='Информация о себе')
