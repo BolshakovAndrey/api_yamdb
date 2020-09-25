@@ -5,6 +5,12 @@ from .models import Roles
 
 
 class IsAuthor(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return (request.user.is_authenticated and
+                obj.author == request.user)
+
+
+class IsAuthor(BasePermission):
     """
     Редактирование объекта возможно только для Автора.
     """
@@ -29,9 +35,6 @@ class IsModerator(BasePermission):
 
 
 class IsAdmin(BasePermission):
-    """
-    Редактирование объекта возможно только для Модератора.
-    """
     message = 'Не хватает прав, нужны права Администратора'
 
     def has_permission(self, request, view):

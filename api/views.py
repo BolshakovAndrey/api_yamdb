@@ -1,18 +1,18 @@
 from django.db.models import Avg, Max
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
-from rest_framework.filters import SearchFilter
 from rest_framework.generics import (ListAPIView, UpdateAPIView,
                                      get_object_or_404)
-from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
-                                   ListModelMixin)
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import (AllowAny, IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.mixins import (
+    ListModelMixin, CreateModelMixin, DestroyModelMixin)
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 from api.filters import TitleFilter
 
@@ -30,22 +30,18 @@ BASE_USERNAME = 'User'
 
 class RegisterView(APIView):
     """
-    По полученному email создает user в базе, генерирует код, отправляет
-    код на email. Если email уже был в базе - отправляет уже существующий
-    код повторно.
+    Вью, принимает на вход email и генерирует для него код доступа
     """
     permission_classes = (AllowAny,)
 
     def post(self, request):
         email = request.data.get('email')
         user = User.objects.filter(email=email)
-        if len(user) > 0:  # проверка на случай если такой email уже создан в БД
+        if len(user) > 0:
             confirmation_code = user[0].confirmation_code
         else:
             confirmation_code = generate_confirmation_code()
-            max_id = User.objects.aggregate(Max('id'))['id__max'] + 1  # username обязательное поле,
-            # поэтому чтобы генерировать уникальный username - беру max_id из БД
-            # и генерю username=User+уникальный id
+            max_id = User.objects.aggregate(Max('id'))['id__max'] + 1
             data = {'email': email, 'confirmation_code': confirmation_code,
                     'username': f'{BASE_USERNAME}{max_id}'}
             serializer = UserSerializer(data=data)
@@ -57,7 +53,7 @@ class RegisterView(APIView):
 
 class TokenView(APIView):
     """
-    По полученным email+confirmation_code генерирует и возвращает токен
+    Вью, принимает email и confirmation_code, возвращает токен
     """
     permission_classes = (AllowAny, )
 
@@ -75,6 +71,9 @@ class TokenView(APIView):
 
 
 class UsersViewSet(ModelViewSet):
+    """
+    Вьюсет для работы с пользователями
+    """
     serializer_class = UserSerializer
     queryset = User.objects.all()
     lookup_field = 'username'
@@ -82,18 +81,19 @@ class UsersViewSet(ModelViewSet):
 
 
 class UsersMeViewSet(ListAPIView, UpdateAPIView, GenericViewSet):
+    """
+    Вьюсет, возвращает текущего пользователя (себя) и позволяет его изменять
+    """
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
 
-    def get_object(self):  # для PUT/PATCH по умолчанию нужен адрес вида /users/<pk>/
-        # но т.к. нам нужен адрес users/me/ - переопределяю get_object чтобы просто user-а текущего возвращал
+    def get_object(self):
         return self.request.user
 
     def get_queryset(self):
         return self.get_object()
 
-    def list(self, request, *args, **kwargs):  # по умолчанию list возвращает list, а нужен один объект
-        # поэтому переопреляю list (RetriveAPIView не подходит, т.к. ему тоже нужен адрес вида /users/<pk>/)
+    def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         serializer = self.get_serializer(queryset, many=False)
         return Response(serializer.data)
@@ -132,6 +132,7 @@ class CategoryViewSet(CreateListDestroyViewSet):
     serializer_class = CategorySerializer
     pagination_class = PageNumberPagination
     permission_classes = [IsAdminOrReadOnly]
+    # filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name']
     lookup_field = 'slug'
 
@@ -144,6 +145,7 @@ class GenreViewSet(CreateListDestroyViewSet):
     serializer_class = GenreSerializer
     pagination_class = PageNumberPagination
     permission_classes = [IsAdminOrReadOnly]
+    # filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name']
     lookup_field = 'slug'
 

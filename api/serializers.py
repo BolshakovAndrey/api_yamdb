@@ -4,6 +4,9 @@ from .models import Category, Comment, Genre, Review, Roles, Title, User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор пользователей
+    """
     role = serializers.CharField(default=Roles.USER)
 
     class Meta:
