@@ -2,8 +2,7 @@ from django.db.models import Avg, Max
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.filters import SearchFilter
-from rest_framework.generics import (ListAPIView, UpdateAPIView,
-                                     get_object_or_404)
+from rest_framework.generics import get_object_or_404
 from rest_framework.mixins import (CreateModelMixin, DestroyModelMixin,
                                    ListModelMixin)
 from rest_framework.pagination import PageNumberPagination
@@ -13,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.decorators import action
 
 from api.filters import TitleFilter
 
@@ -45,8 +45,8 @@ class RegisterView(APIView):
             data = {'email': email, 'confirmation_code': confirmation_code,
                     'username': f'{BASE_USERNAME}{max_id}'}
             serializer = UserSerializer(data=data)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
         send_mail_to_user(email, confirmation_code)
         return Response({'email': email})
 
@@ -79,24 +79,18 @@ class UsersViewSet(ModelViewSet):
     lookup_field = 'username'
     permission_classes = (IsAuthenticated, IsSuperuser | IsAdmin,)
 
-
-class UsersMeViewSet(ListAPIView, UpdateAPIView, GenericViewSet):
-    """
-    Вьюсет, возвращает текущего пользователя (себя) и позволяет его изменять
-    """
-    serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated,)
-
-    def get_object(self):
-        return self.request.user
-
-    def get_queryset(self):
-        return self.get_object()
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=False)
-        return Response(serializer.data)
+    @action(detail=False, permission_classes=(IsAuthenticated,),
+            methods=['get', 'patch'], url_path='me')
+    def get_or_update_self(self, request):
+        if request.method != 'GET':
+            serializer = self.get_serializer(
+                instance=request.user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            serializer = self.get_serializer(request.user, many=False)
+            return Response(serializer.data)
 
 
 class TitlesViewSet(ModelViewSet):
