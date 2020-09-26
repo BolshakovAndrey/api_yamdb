@@ -15,7 +15,6 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.filters import TitleFilter
-
 from .models import Category, Genre, Review, Title, User
 from .permissions import (IsAdmin, IsAdminOrReadOnly, IsAuthor, IsModerator,
                           IsSuperuser)
@@ -55,7 +54,7 @@ class TokenView(APIView):
     """
     Вью, принимает email и confirmation_code, возвращает токен
     """
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     def get_token(self, user):
         refresh = RefreshToken.for_user(user)
@@ -103,7 +102,8 @@ class TitlesViewSet(ModelViewSet):
     """
     Viewset который предоставляет CRUD-действия для произведений
     """
-    queryset = Title.objects.annotate(rating=Avg('reviews__score')).order_by('id')
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')).order_by('id')
     filter_backends = (DjangoFilterBackend, SearchFilter)
     permission_classes = [IsAuthenticatedOrReadOnly, IsAdminOrReadOnly]
     filterset_class = TitleFilter
