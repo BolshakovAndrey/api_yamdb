@@ -43,8 +43,8 @@ REST API для сервиса **YaMDb**
 [Гаврилов Павел.](https://github.com/Venatorr/api_yamdb)
 Управление пользователями (Auth и Users): система регистрации и аутентификации, права доступа, работа с токеном, система подтверждения e-mail, поля.
 
-[Большаков Анрей.](https://github.com/BolshakovAndrey/api_yamdb) 
-Категории (Categories), жанры (Genres) и произведения (Titles): модели, view и эндпойнты для них.
+[Большаков Андрей.](https://github.com/BolshakovAndrey/api_yamdb) 
+Категории (Categories), жанры (Genres) и произведения (Titles): модели, view и эндпойнты для них и рейтинги.
 
 [Дробышев Артем.](https://github.com/stpdmnk/api_yamdb-1)
 Отзывы (Review) и комментарии (Comments): модели и view, эндпойнты, права доступа для запросов. Рейтинги произведений.
