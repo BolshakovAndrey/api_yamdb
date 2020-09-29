@@ -33,6 +33,10 @@
 
 `./ manage.py migrate`
 
+При желании вы можете загрузить демо-данные в базу данных командой
+
+`./manage.py loaddata data/fixtures.json
+`
 
 #####**Участники:**
 
