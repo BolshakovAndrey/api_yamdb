@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/BolshakovAndrey/api_yamdb.svg?branch=master)](https://travis-ci.com/BolshakovAndrey/api_yamdb)
+
 REST API для сервиса **YaMDb** 
 База отзывов о фильмах, книгах и музыке. 
 
