@@ -1,4 +1,3 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/be2c7b20c1f54cd8beafaf3330dc4e59)](https://app.codacy.com/gh/BolshakovAndrey/api_yamdb?utm_source=github.com&utm_medium=referral&utm_content=BolshakovAndrey/api_yamdb&utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.com/BolshakovAndrey/api_yamdb.svg?branch=master)](https://travis-ci.com/BolshakovAndrey/api_yamdb)
 
 REST API для сервиса **YaMDb** 
